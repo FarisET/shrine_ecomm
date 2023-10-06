@@ -19,8 +19,26 @@ class _LoginPageState extends State<LoginPage> {
         leading: IconButton(
             icon: const Icon(Icons.menu, semanticLabel: 'menu'),
             onPressed: () {
-              print('Menu button');
+              //  print('Menu button');
             }),
+        actions: [
+          IconButton(
+              onPressed: () {
+                // print('search button');
+              },
+              icon: const Icon(
+                Icons.search,
+                semanticLabel: 'search',
+              )),
+          IconButton(
+              onPressed: () {
+                print('filter button');
+              },
+              icon: const Icon(
+                Icons.filter,
+                semanticLabel: 'filter',
+              ))
+        ],
       ),
       body: SafeArea(
           child: Padding(
