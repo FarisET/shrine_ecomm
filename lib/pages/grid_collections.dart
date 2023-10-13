@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class GridCollections extends StatefulWidget {
   const GridCollections({super.key});
@@ -10,8 +13,10 @@ class GridCollections extends StatefulWidget {
 }
 
 class _GridCollectionsState extends State<GridCollections> {
-  List<Card> _buildGridCards(int count) {
-    List<Card> cards = List.generate(count, (int index) {
+
+
+  Iterable<Card> _buildGridCards(List<Users> data) {
+    Iterable<Card> cards = data.map((Users) {
       return Card(
         clipBehavior: Clip.antiAlias,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -24,9 +29,9 @@ class _GridCollectionsState extends State<GridCollections> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('title'),
+                Text(Users.title),
                 const SizedBox(height: 8.0),
-                Text('Secondary Text')
+                Text('UserId:${Users.userId} | Id: ${Users.id}')
               ],
             ),
           )
@@ -63,11 +68,46 @@ class _GridCollectionsState extends State<GridCollections> {
               ))
         ],
       ),
-      body: GridView.count(
-          crossAxisCount: 2,
-          padding: const EdgeInsets.all(16.0),
-          childAspectRatio: 8.0 / 9.0,
-          children: _buildGridCards(10)),
+      // body: GridView.count(
+      //     crossAxisCount: 2,
+      //     padding: const EdgeInsets.all(16.0),
+      //     childAspectRatio: 8.0 / 9.0,
+      //     children: _buildGridCards(10)),
+    );
+  }
+}
+
+Future<List<Users>> fetchUsers() async {
+  final response =
+      await http.get(Uri.parse('https://jsonplaceholder.typicode.com/albums'));
+  if (response.statusCode == 200) {
+    List<dynamic> _parsedListJson = jsonDecode(response.body);
+    List<Users> _itemsList = List<Users>.from(
+        _parsedListJson.map<Users>((dynamic i) => Users.fromJson(i))).toList();
+    return _itemsList;
+  } else {
+    throw Exception('Failed to load album');
+  }
+}
+
+
+//Json Model Class
+class Users {
+  final int userId;
+  final int id;
+  final String title;
+
+  const Users({
+    required this.userId,
+    required this.id,
+    required this.title,
+  });
+
+  factory Users.fromJson(Map<String, dynamic> json) {
+    return Users(
+      userId: json['userId'],
+      id: json['id'],
+      title: json['title'],
     );
   }
 }
